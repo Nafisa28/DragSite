@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Template } from "@/types/editor";
+import { PageData, Template } from "@/types/editor";
 import { Layers, ArrowLeft, Search, Loader2, Eye } from "lucide-react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -67,20 +67,49 @@ export default function TemplatesClient({ user, templates }: Props) {
     );
   }
 
+  function isUuid(value: string) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value
+    );
+  }
+
   async function handleSelectTemplate(template: Template) {
     setCreating(template.id);
 
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !sessionData?.session) {
+      alert(
+        "Session expired or missing. Please sign in again before creating a site."
+      );
+      setCreating(null);
+      router.push("/auth/login");
+      return;
+    }
+
     const slug = generateSlug(template.name);
+    const insertData: {
+      user_id: string;
+      name: string;
+      slug: string;
+      template_id?: string | null;
+      status: string;
+      page_data: PageData;
+    } = {
+      user_id: user.id,
+      name: `My ${template.name} Site`,
+      slug,
+      status: "draft",
+      page_data: template.page_data,
+    };
+
+    if (isUuid(template.id)) {
+      insertData.template_id = template.id;
+    }
+
     const { data: site, error } = await supabase
       .from("sites")
-      .insert({
-        user_id: user.id,
-        name: `My ${template.name} Site`,
-        slug,
-        template_id: template.id,
-        status: "draft",
-        page_data: template.page_data,
-      })
+      .insert(insertData)
       .select()
       .single();
 

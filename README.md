@@ -29,6 +29,16 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Seed local template data
+
+If your Supabase database has no templates, you can seed them by setting `SEED_TEMPLATES_KEY` in your `.env.local` and visiting:
+
+```bash
+http://localhost:3001/api/seed-templates?secret=<your-key>
+```
+
+This will populate the `templates` table with the default starter templates.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
