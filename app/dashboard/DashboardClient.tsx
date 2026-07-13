@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Site } from "@/types/editor";
 import {
   Layers, Plus, Globe, FileText, Trash2, Edit2,
-  ExternalLink, LogOut, User, MoreVertical,
+  ExternalLink, LogOut, MoreVertical,
   Clock, Zap
 } from "lucide-react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
@@ -30,6 +30,7 @@ export default function DashboardClient({ user, profile, initialSites }: Props) 
   const [sites, setSites] = useState<Site[]>(initialSites);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
 
   const displayName = profile?.name ?? user.email?.split("@")[0] ?? "User";
 
@@ -45,6 +46,22 @@ export default function DashboardClient({ user, profile, initialSites }: Props) 
     await supabase.from("sites").delete().eq("id", siteId);
     setSites((prev) => prev.filter((s) => s.id !== siteId));
     setDeletingId(null);
+  }
+
+  async function handlePublish(siteId: string) {
+    setPublishingId(siteId);
+    const { data, error } = await supabase
+      .from("sites")
+      .update({ status: "published", updated_at: new Date().toISOString() })
+      .eq("id", siteId)
+      .select()
+      .single();
+
+    if (!error && data) {
+      setSites((prev) => prev.map((site) => (site.id === siteId ? { ...site, ...data } : site)));
+    }
+
+    setPublishingId(null);
   }
 
   function formatDate(dateStr: string) {
@@ -134,7 +151,9 @@ export default function DashboardClient({ user, profile, initialSites }: Props) 
                 openMenuId={openMenuId}
                 setOpenMenuId={setOpenMenuId}
                 onDelete={handleDelete}
+                onPublish={handlePublish}
                 deletingId={deletingId}
+                publishingId={publishingId}
                 formatDate={formatDate}
               />
             ))}
@@ -146,13 +165,15 @@ export default function DashboardClient({ user, profile, initialSites }: Props) 
 }
 
 function SiteCard({
-  site, openMenuId, setOpenMenuId, onDelete, deletingId, formatDate
+  site, openMenuId, setOpenMenuId, onDelete, onPublish, deletingId, publishingId, formatDate
 }: {
   site: Site;
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
   onDelete: (id: string) => void;
+  onPublish: (id: string) => void;
   deletingId: string | null;
+  publishingId: string | null;
   formatDate: (d: string) => string;
 }) {
   const isOpen = openMenuId === site.id;
@@ -247,12 +268,14 @@ function SiteCard({
               <Globe className="w-3.5 h-3.5" /> View
             </a>
           ) : (
-            <Link
-              href={`/editor/${site.id}`}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 text-sm font-medium transition-colors"
+            <button
+              onClick={() => onPublish(site.id)}
+              disabled={publishingId === site.id}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Zap className="w-3.5 h-3.5" /> Publish
-            </Link>
+              <Zap className="w-3.5 h-3.5" />
+              {publishingId === site.id ? "Publishing..." : "Publish"}
+            </button>
           )}
         </div>
       </div>

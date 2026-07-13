@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import TemplatesClient from "./TemplatesClient";
+import { ALL_TEMPLATES } from "@/data/templates";
 
 export default async function TemplatesPage() {
   const supabase = await createClient();
@@ -14,5 +15,7 @@ export default async function TemplatesPage() {
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 
-  return <TemplatesClient user={user} templates={templates ?? []} />;
+  const templateData = templates && templates.length > 0 ? templates : ALL_TEMPLATES;
+
+  return <TemplatesClient user={user} templates={templateData} />;
 }

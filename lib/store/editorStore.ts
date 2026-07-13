@@ -51,6 +51,7 @@ interface EditorStore {
   reorderSections: (activeId: string, overId: string) => void;
   deleteSection: (sectionId: string) => void;
   duplicateSection: (sectionId: string) => void;
+  addSection: (section: Section) => void;
 
   // Widget ops
   updateWidget: (sectionId: string, colId: string, widgetId: string, updates: Partial<Widget>) => void;
@@ -143,6 +144,15 @@ const useEditorStore = create<EditorStore>()(
           sections.splice(idx + 1, 0, copy);
           return { isDirty: true, pageData: { ...state.pageData, sections } };
         }),
+
+      addSection: (section) =>
+        set((state) => ({
+          isDirty: true,
+          pageData: {
+            ...state.pageData,
+            sections: [...state.pageData.sections, section],
+          },
+        })),
 
       updateWidget: (sectionId, colId, widgetId, updates) =>
         set((state) => ({
