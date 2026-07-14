@@ -106,19 +106,19 @@ export default function DashboardClient({ user, profile, initialSites }: Props) 
         {/* Welcome bar */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-4xl font-bold text-white lg:text-5xl">
               Welcome back, {displayName.split(" ")[0]} 👋
             </h1>
-            <p className="text-gray-400 mt-1">
+            <p className="text-slate-300 mt-2 text-base">
               {sites.length === 0
-                ? "Create your first site to get started"
-                : `You have ${sites.length} site${sites.length !== 1 ? "s" : ""}`}
+                ? "Create your first website and start building with confidence."
+                : `You have ${sites.length} site${sites.length !== 1 ? "s" : ""}. Ready to refine your next launch?`}
             </p>
           </div>
           <Link
             href="/templates"
             id="create-new-site"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 font-semibold text-sm transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.4)]"
+            className="flex items-center gap-2 px-6 py-3 rounded-3xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-cyan-500 font-semibold text-base transition-all shadow-[0_20px_80px_-45px_rgba(124,58,237,0.9)] hover:shadow-[0_0_35px_rgba(124,58,237,0.4)]"
           >
             <Plus className="w-4 h-4" />
             Create New Site
@@ -181,31 +181,34 @@ function SiteCard({
   return (
     <div className="glass rounded-2xl overflow-hidden hover:border-white/15 transition-all group">
       {/* Thumbnail */}
-      <div className="h-40 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+      <div className="h-48 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 relative overflow-hidden shadow-lg shadow-slate-950/30">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.35),_transparent_30%)]" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <FileText className="w-10 h-10 text-gray-600" />
+          <FileText className="w-12 h-12 text-slate-500" />
         </div>
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-4 right-4">
           <span
-            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+            className={`px-3 py-1 rounded-full text-xs font-semibold tracking-[0.16em] ${
               site.status === "published"
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                : "bg-violet-500/15 text-violet-200 border border-violet-500/30"
             }`}
           >
-            {site.status === "published" ? "● Live" : "Draft"}
+            {site.status === "published" ? "Live" : "Draft"}
           </span>
         </div>
       </div>
 
       {/* Info */}
       <div className="p-5">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white truncate">{site.name}</h3>
-            <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
-              <Clock className="w-3 h-3" />
-              {formatDate(site.updated_at)}
+            <h3 className="font-semibold text-xl text-white truncate">{site.name}</h3>
+            <div className="mt-2 text-sm text-slate-400">
+              <span className="inline-flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5" />
+                {formatDate(site.updated_at)}
+              </span>
             </div>
           </div>
 
@@ -251,12 +254,12 @@ function SiteCard({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-col gap-3 mt-5 sm:flex-row">
           <Link
             href={`/editor/${site.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-3xl bg-white/10 hover:bg-white/15 text-base font-semibold text-white transition-colors"
           >
-            <Edit2 className="w-3.5 h-3.5" /> Edit
+            <Edit2 className="w-4 h-4" /> Edit
           </Link>
           {site.status === "published" ? (
             <a
@@ -290,8 +293,8 @@ function EmptyState() {
         <Layers className="w-10 h-10 text-violet-400" />
       </div>
       <h2 className="text-2xl font-bold text-white mb-3">No sites yet</h2>
-      <p className="text-gray-400 max-w-sm mb-8 leading-relaxed">
-        Choose from 15 beautiful templates and start building your first website in minutes.
+      <p className="text-slate-400 max-w-sm mb-8 leading-relaxed">
+        Browse polished templates and start building your first website with style and speed.
       </p>
       <Link
         href="/templates"

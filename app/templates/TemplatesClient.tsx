@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { PageData, Template } from "@/types/editor";
-import { Layers, ArrowLeft, Search, Loader2, Eye } from "lucide-react";
+import { Layers, ArrowLeft, Search, Loader2 } from "lucide-react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
-const CATEGORIES = ["All", "Personal", "Business", "Marketing", "Food", "Creative", "Event"];
+const CATEGORIES = ["All", "Personal", "Business", "Marketing", "Food", "Creative", "Event", "Nonprofit"];
 
 const CATEGORY_COLORS: Record<string, string> = {
   Personal: "bg-violet-500/20 text-violet-300",
@@ -17,6 +17,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Food: "bg-amber-500/20 text-amber-300",
   Creative: "bg-pink-500/20 text-pink-300",
   Event: "bg-red-500/20 text-red-300",
+  Nonprofit: "bg-cyan-500/20 text-cyan-300",
 };
 
 const TEMPLATE_GRADIENTS = [
@@ -149,11 +150,11 @@ export default function TemplatesClient({ user, templates }: Props) {
       <main className="max-w-7xl mx-auto px-8 py-10">
         {/* Title */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Start with a beautiful template
           </h1>
-          <p className="text-gray-400 text-lg">
-            Choose from {templates.length} professionally designed templates. Fully customizable.
+          <p className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto">
+            Choose a polished starting point built for your niche, then customize every detail with live drag-and-drop.
           </p>
         </div>
 
@@ -192,13 +193,13 @@ export default function TemplatesClient({ user, templates }: Props) {
             No templates found. Try a different search.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {filtered.map((template, idx) => (
               <TemplateCard
                 key={template.id}
                 template={template}
                 gradient={TEMPLATE_GRADIENTS[idx % TEMPLATE_GRADIENTS.length]}
-                categoryColor={CATEGORY_COLORS[template.category] ?? "bg-gray-500/20 text-gray-400"}
+                categoryColor={CATEGORY_COLORS[template.category] ?? "bg-slate-500/20 text-slate-300"}
                 creating={creating}
                 onSelect={handleSelectTemplate}
               />

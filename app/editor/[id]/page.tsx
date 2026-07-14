@@ -26,13 +26,21 @@ export default async function EditorPage({ params }: Props) {
     redirect("/dashboard");
   }
 
+  let pageData: PageData = { id: site.id, sections: [] };
+  if (site.page_data) {
+    pageData =
+      typeof site.page_data === "string"
+        ? JSON.parse(site.page_data)
+        : (site.page_data as PageData);
+  }
+
   return (
     <EditorClient
       siteId={site.id}
       initialName={site.name}
       initialStatus={site.status}
       initialSlug={site.slug}
-      initialPageData={site.page_data as PageData}
+      initialPageData={pageData}
     />
   );
 }

@@ -3,7 +3,6 @@ import { temporal } from "zundo";
 import {
   PageData,
   Section,
-  Column,
   Widget,
   EditorSelection,
   DeviceMode,
@@ -66,7 +65,7 @@ interface EditorStore {
 
 const useEditorStore = create<EditorStore>()(
   temporal(
-    (set, get) => ({
+    (set) => ({
       pageData: { id: "", sections: [] },
       selection: null,
       deviceMode: "desktop",

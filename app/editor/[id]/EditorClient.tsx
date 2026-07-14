@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState, ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import useEditorStore from "@/lib/store/editorStore";
-import { PageData, Section, Widget, WidgetType, EditorSelection } from "@/types/editor";
+import { PageData, Section, Widget, WidgetType, Column } from "@/types/editor";
 import { renderToHtml } from "@/lib/renderer/renderToHtml";
-import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors, closestCenter } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors, closestCenter, useDroppable, useDraggable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useStoreWithEqualityFn } from "zustand/traditional";
 import JSZip from "jszip";
 import {
   ArrowLeft,
@@ -28,6 +26,7 @@ import {
   RotateCcw,
   RotateCw,
   Download,
+  GripVertical,
 } from "lucide-react";
 
 interface Props {
@@ -36,6 +35,14 @@ interface Props {
   initialStatus: "draft" | "published";
   initialSlug: string;
   initialPageData: PageData;
+}
+
+interface DndItemData {
+  type: "new-widget" | "section" | "widget" | "column";
+  widgetType?: WidgetType;
+  sectionId?: string;
+  columnId?: string;
+  source?: string;
 }
 
 const DEVICE_MODES = [
@@ -140,10 +147,116 @@ function SortableSection({
   children,
 }: {
   section: Section;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: section.id,
+    data: { type: "section" },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.82 : 1,
+      }}
+      {...attributes}
+      {...listeners}
+    >
+      {children}
+    </div>
+  );
+}
+
+function WidgetPaletteItem({
+  type,
+  label,
+  onClick,
+}: {
+  type: WidgetType;
+  label: string;
+  onClick: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `palette-${type}`,
+    data: { type: "new-widget", widgetType: type, source: "palette" },
+  });
+
+  return (
+    <button
+      ref={setNodeRef}
+      type="button"
+      onClick={onClick}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        opacity: isDragging ? 0.6 : 1,
+      }}
+      className="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-gray-200 hover:border-violet-500 hover:bg-violet-500/10 transition"
+    >
+      {label}
+    </button>
+  );
+}
+
+function ColumnDropZone({
+  sectionId,
+  column,
+  selected,
+  onSelect,
+  children,
+}: {
+  sectionId: string;
+  column: Column;
+  selected: boolean;
+  onSelect: () => void;
+  children: ReactNode;
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: column.id,
+    data: { type: "column", sectionId, columnId: column.id },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      onClick={(event) => {
+        event.stopPropagation();
+        onSelect();
+      }}
+      className={`rounded-3xl border p-4 transition ${
+        isOver
+          ? "border-violet-500/60 bg-violet-500/10"
+          : selected
+          ? "border-violet-500 bg-white/5"
+          : "border-white/10 bg-black/20 hover:border-white/20"
+      }`}
+      style={styleToReact(column.style)}
+    >
+      {children}
+    </div>
+  );
+}
+
+function SortableWidget({
+  widget,
+  sectionId,
+  columnId,
+  selected,
+  onSelect,
+}: {
+  widget: Widget;
+  sectionId: string;
+  columnId: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: widget.id,
+    data: { type: "widget", sectionId, columnId },
   });
 
   return (
@@ -154,10 +267,18 @@ function SortableSection({
         transition,
         opacity: isDragging ? 0.8 : 1,
       }}
-      {...attributes}
-      {...listeners}
+      className={`relative rounded-3xl border px-4 py-4 transition ${
+        selected
+          ? "border-violet-500 bg-white/5 shadow-[0_15px_40px_-20px_rgba(124,58,237,0.5)]"
+          : "border-white/10 bg-black/10 hover:border-violet-500/30"
+      }`}
     >
-      {children}
+      <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/5 text-gray-300" {...attributes} {...listeners}>
+        <GripVertical className="w-4 h-4" />
+      </div>
+      <div onClick={(event) => { event.stopPropagation(); onSelect(); }}>
+        <WidgetPreview widget={widget} selected={selected} onSelect={onSelect} />
+      </div>
     </div>
   );
 }
@@ -304,13 +425,12 @@ export default function EditorClient({
   initialSlug,
   initialPageData,
 }: Props) {
-  const router = useRouter();
   const supabase = createClient();
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hasHydrated, setHasHydrated] = useState(false);
+  const hasHydrated = useRef(false);
 
   const initEditor = useEditorStore((state) => state.initEditor);
   const pageData = useEditorStore((state) => state.pageData);
@@ -335,13 +455,15 @@ export default function EditorClient({
   const updateWidgetStyle = useEditorStore((state) => state.updateWidgetStyle);
   const updateColumnStyle = useEditorStore((state) => state.updateColumnStyle);
   const addWidget = useEditorStore((state) => state.addWidget);
+  const deleteWidget = useEditorStore((state) => state.deleteWidget);
+  const reorderWidgets = useEditorStore((state) => state.reorderWidgets);
   const addSection = useEditorStore((state) => state.addSection);
 
-  const temporal = useStoreWithEqualityFn(useEditorStore.temporal as any, (state: any) => ({
-    undo: state.undo,
-    redo: state.redo,
-    canUndo: (state.pastStates?.length ?? 0) > 0,
-    canRedo: (state.futureStates?.length ?? 0) > 0,
+  const temporal = useEditorStore((state) => ({
+    undo: (state as any).undo as (() => void) | undefined,
+    redo: (state as any).redo as (() => void) | undefined,
+    canUndo: ((state as any).pastStates as unknown[] | undefined)?.length ?? 0 > 0,
+    canRedo: ((state as any).futureStates as unknown[] | undefined)?.length ?? 0 > 0,
   }));
 
   const sensors = useSensors(
@@ -350,23 +472,153 @@ export default function EditorClient({
     })
   );
 
+  function getWidgetLocation(widgetId: string) {
+    for (const section of pageData.sections) {
+      for (const column of section.columns) {
+        const widget = column.widgets.find((w) => w.id === widgetId);
+        if (widget) {
+          return { sectionId: section.id, columnId: column.id, widget };
+        }
+      }
+    }
+    return null;
+  }
+
+  function handleDragStart() {
+    return;
+  }
+
+  function handleDragCancel() {
+    return;
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activeData = active.data.current as unknown as DndItemData;
+    const overData = over.data.current as unknown as DndItemData;
+
+    if (activeData?.type === "new-widget") {
+      const widgetType = activeData.widgetType as WidgetType;
+      const targetSectionId = overData?.type === "column" ? overData.sectionId : overData?.type === "widget" ? overData.sectionId : null;
+      const targetColumnId = overData?.type === "column" ? overData.columnId : overData?.type === "widget" ? overData.columnId : null;
+      if (targetSectionId && targetColumnId) {
+        addWidget(targetSectionId, targetColumnId, createWidget(widgetType));
+        setSelection({ type: "column", sectionId: targetSectionId, columnId: targetColumnId });
+      }
+      return;
+    }
+
+    if (activeData?.type === "section" && overData?.type === "section") {
+      reorderSections(active.id as string, over.id as string);
+      return;
+    }
+
+    if (activeData?.type === "widget") {
+      const activeLocation = getWidgetLocation(active.id as string);
+      if (!activeLocation) return;
+
+      if (overData?.type === "widget") {
+        const overLocation = getWidgetLocation(over.id as string);
+        if (!overLocation) return;
+
+        if (activeLocation.columnId === overLocation.columnId) {
+          reorderWidgets(activeLocation.sectionId, activeLocation.columnId, active.id as string, over.id as string);
+          setSelection({
+            type: "widget",
+            sectionId: activeLocation.sectionId,
+            columnId: activeLocation.columnId,
+            widgetId: active.id as string,
+          });
+          return;
+        }
+
+        const movingWidget = activeLocation.widget;
+        deleteWidget(activeLocation.sectionId, activeLocation.columnId, active.id as string);
+        addWidget(overLocation.sectionId, overLocation.columnId, movingWidget);
+        setSelection({
+          type: "widget",
+          sectionId: overLocation.sectionId,
+          columnId: overLocation.columnId,
+          widgetId: movingWidget.id,
+        });
+        return;
+      }
+
+      if (overData?.type === "column" && overData.sectionId && overData.columnId) {
+        const movingWidget = activeLocation.widget;
+        if (activeLocation.columnId !== over.id) {
+          deleteWidget(activeLocation.sectionId, activeLocation.columnId, active.id as string);
+          addWidget(overData.sectionId, overData.columnId, movingWidget);
+          setSelection({
+            type: "widget",
+            sectionId: overData.sectionId,
+            columnId: overData.columnId,
+            widgetId: movingWidget.id,
+          });
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     initEditor(siteId, initialName, initialSlug, initialStatus, initialPageData);
   }, [siteId, initialName, initialSlug, initialStatus, initialPageData, initEditor]);
 
   useEffect(() => {
-    setHasHydrated(true);
+    hasHydrated.current = true;
   }, []);
 
+  const handleSave = useCallback(
+    async (publish = false, silent = false) => {
+      setError(null);
+      if (!silent) setMessage(null);
+      setSaving(true);
+
+      const updatedStatus = publish ? "published" : siteStatus;
+      const publishedAt = publish ? new Date().toISOString() : null;
+
+      const { error: updateError } = await supabase
+        .from("sites")
+        .update({
+          name: siteName,
+          status: updatedStatus,
+          page_data: pageData,
+          published_at: publishedAt,
+        })
+        .eq("id", siteId);
+
+      if (updateError) {
+        setError(updateError.message);
+        setSaving(false);
+        return;
+      }
+
+      if (publish) {
+        setSiteStatus("published");
+      }
+
+      markClean();
+      setLastSaved(new Date());
+      setSaving(false);
+      if (!silent) {
+        setMessage(publish ? "Site published successfully." : "Changes saved.");
+        window.setTimeout(() => setMessage(null), 3000);
+      }
+    },
+    [siteId, siteName, siteStatus, pageData, supabase, setSiteStatus, markClean, setLastSaved]
+  );
+
   useEffect(() => {
-    if (!hasHydrated || !isDirty || saving) return;
+    if (!hasHydrated.current || !isDirty || saving) return;
 
     const autoSaveTimer = window.setTimeout(() => {
       handleSave(false, true);
     }, 3000);
 
     return () => window.clearTimeout(autoSaveTimer);
-  }, [pageData, isDirty, saving, hasHydrated]);
+  }, [pageData, isDirty, saving, handleSave]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -415,43 +667,6 @@ export default function EditorClient({
 
     const targetSection = pageData.sections[nextIndex];
     reorderSections(selectedSection.id, targetSection.id);
-  }
-
-  async function handleSave(publish = false, silent = false) {
-    setError(null);
-    if (!silent) setMessage(null);
-    setSaving(true);
-
-    const updatedStatus = publish ? "published" : siteStatus;
-    const publishedAt = publish ? new Date().toISOString() : null;
-
-    const { error: updateError } = await supabase
-      .from("sites")
-      .update({
-        name: siteName,
-        status: updatedStatus,
-        page_data: pageData,
-        published_at: publishedAt,
-      })
-      .eq("id", siteId);
-
-    if (updateError) {
-      setError(updateError.message);
-      setSaving(false);
-      return;
-    }
-
-    if (publish) {
-      setSiteStatus("published");
-    }
-
-    markClean();
-    setLastSaved(new Date());
-    setSaving(false);
-    if (!silent) {
-      setMessage(publish ? "Site published successfully." : "Changes saved.");
-      window.setTimeout(() => setMessage(null), 3000);
-    }
   }
 
   async function handleExportZip() {
@@ -510,6 +725,34 @@ export default function EditorClient({
     setSelection({ type: "column", sectionId: target.sectionId, columnId: target.columnId });
   }
 
+  function duplicateWidget() {
+    if (!selectedSection || !selectedColumn || !selectedWidget) return;
+
+    const copy: Widget = {
+      ...selectedWidget,
+      id: `w-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    };
+
+    addWidget(selectedSection.id, selectedColumn.id, copy);
+    setSelection({
+      type: "widget",
+      sectionId: selectedSection.id,
+      columnId: selectedColumn.id,
+      widgetId: copy.id,
+    });
+  }
+
+  function moveWidget(direction: "up" | "down") {
+    if (!selectedSection || !selectedColumn || !selectedWidget) return;
+
+    const widgets = selectedColumn.widgets;
+    const currentIndex = widgets.findIndex((w) => w.id === selectedWidget.id);
+    const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (currentIndex === -1 || nextIndex < 0 || nextIndex >= widgets.length) return;
+
+    reorderWidgets(selectedSection.id, selectedColumn.id, selectedWidget.id, widgets[nextIndex].id);
+  }
+
   function handleAddSection() {
     const sectionId = `sec-${Date.now()}`;
     const newSection: Section = {
@@ -541,12 +784,6 @@ export default function EditorClient({
 
     addSection(newSection);
     setSelection({ type: "section", sectionId: sectionId });
-  }
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    reorderSections(active.id as string, over.id as string);
   }
 
   function renderSelectionInspector() {
@@ -744,6 +981,46 @@ export default function EditorClient({
               }
               className="w-full h-12 rounded-2xl border border-white/10 bg-black/10 p-2"
             />
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <button
+                type="button"
+                onClick={() => moveWidget("up")}
+                disabled={selectedColumn.widgets.findIndex((w) => w.id === selectedWidget.id) <= 0}
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-gray-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ChevronUp className="w-4 h-4 mx-auto" />
+                Move up
+              </button>
+              <button
+                type="button"
+                onClick={() => moveWidget("down")}
+                disabled={selectedColumn.widgets.findIndex((w) => w.id === selectedWidget.id) >= selectedColumn.widgets.length - 1}
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-gray-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ChevronDown className="w-4 h-4 mx-auto" />
+                Move down
+              </button>
+              <button
+                type="button"
+                onClick={duplicateWidget}
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-gray-200 hover:bg-white/10"
+              >
+                <Copy className="w-4 h-4 mx-auto" />
+                Duplicate
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                deleteWidget(selectedSection.id, selectedColumn.id, selectedWidget.id);
+                setSelection(null);
+              }}
+              className="mt-3 w-full rounded-2xl border border-red-500 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 hover:bg-red-500/20 transition"
+            >
+              <Trash2 className="w-4 h-4 inline-block mr-2" /> Delete widget
+            </button>
           </div>
         </div>
       );
@@ -920,14 +1197,12 @@ export default function EditorClient({
                 { label: "Spacer", type: "spacer" },
                 { label: "List", type: "list" },
               ].map((widget) => (
-                <button
-                  type="button"
+                <WidgetPaletteItem
                   key={widget.type}
+                  type={widget.type as WidgetType}
+                  label={widget.label}
                   onClick={() => handleAddWidget(widget.type as WidgetType)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-gray-200 hover:border-violet-500 hover:bg-violet-500/5 transition"
-                >
-                  {widget.label}
-                </button>
+                />
               ))}
             </div>
           </section>
@@ -975,8 +1250,17 @@ export default function EditorClient({
               Live preview ({deviceMode})
             </div>
             <div className="p-6" style={{ minHeight: 640 }}>
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={pageData.sections.map((section) => section.id)} strategy={verticalListSortingStrategy}>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={handleDragCancel}
+              >
+                <SortableContext
+                  items={pageData.sections.map((section) => section.id)}
+                  strategy={verticalListSortingStrategy}
+                >
                   {pageData.sections.map((section) => (
                     <SortableSection key={section.id} section={section}>
                       <div
@@ -984,34 +1268,59 @@ export default function EditorClient({
                         className="rounded-[24px] border border-white/5 p-6 mb-6 transition hover:border-violet-500/30"
                         style={styleToReact(section.style)}
                       >
-                        <div className="grid gap-6" style={{ gridTemplateColumns: section.columns.length > 1 ? "repeat(auto-fit, minmax(220px, 1fr))" : "1fr" }}>
+                        <div
+                          className="grid gap-6"
+                          style={{
+                            gridTemplateColumns:
+                              section.columns.length > 1
+                                ? "repeat(auto-fit, minmax(260px, 1fr))"
+                                : "1fr",
+                          }}
+                        >
                           {section.columns.map((column) => (
-                            <div
+                            <ColumnDropZone
                               key={column.id}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setSelection({ type: "column", sectionId: section.id, columnId: column.id });
-                              }}
-                              className="rounded-3xl border border-white/10 bg-black/20 p-4 transition hover:border-violet-500/30"
-                              style={styleToReact(column.style)}
+                              sectionId={section.id}
+                              column={column}
+                              selected={selection?.columnId === column.id}
+                              onSelect={() =>
+                                setSelection({
+                                  type: "column",
+                                  sectionId: section.id,
+                                  columnId: column.id,
+                                })
+                              }
                             >
-                              {column.widgets.map((widget) => (
-                                <div key={widget.id} className="mb-4 last:mb-0">
-                                  <WidgetPreview
-                                    widget={widget}
-                                    selected={selection?.widgetId === widget.id}
-                                    onSelect={() =>
-                                      setSelection({
-                                        type: "widget",
-                                        sectionId: section.id,
-                                        columnId: column.id,
-                                        widgetId: widget.id,
-                                      })
-                                    }
-                                  />
-                                </div>
-                              ))}
-                            </div>
+                              <SortableContext
+                                items={column.widgets.map((widget) => widget.id)}
+                                strategy={verticalListSortingStrategy}
+                              >
+                                {column.widgets.length === 0 ? (
+                                  <div className="rounded-3xl border border-dashed border-white/10 bg-white/5 p-12 text-center text-sm text-slate-400">
+                                    Drag widgets here
+                                  </div>
+                                ) : (
+                                  column.widgets.map((widget) => (
+                                    <div key={widget.id} className="mb-4 last:mb-0">
+                                      <SortableWidget
+                                        widget={widget}
+                                        sectionId={section.id}
+                                        columnId={column.id}
+                                        selected={selection?.widgetId === widget.id}
+                                        onSelect={() =>
+                                          setSelection({
+                                            type: "widget",
+                                            sectionId: section.id,
+                                            columnId: column.id,
+                                            widgetId: widget.id,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  ))
+                                )}
+                              </SortableContext>
+                            </ColumnDropZone>
                           ))}
                         </div>
                       </div>

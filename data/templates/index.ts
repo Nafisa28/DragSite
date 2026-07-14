@@ -667,6 +667,689 @@ export const comingSoonTemplate: PageData = {
   ],
 };
 
+export const restaurantTemplate: PageData = {
+  id: "tpl-restaurant",
+  sections: [
+    {
+      id: "sec-restaurant-hero",
+      type: "hero",
+      style: {
+        background: "linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%)",
+        padding: "100px 60px",
+        color: "#ffffff",
+      },
+      columns: [
+        {
+          id: "col-restaurant-hero",
+          width: "100%",
+          style: { maxWidth: "800px", margin: "0 auto" },
+          widgets: [
+            {
+              id: "w-rest-tag",
+              type: "text",
+              content: "Finest dining experience",
+              style: {
+                color: "#93c5fd",
+                fontSize: "14px",
+                fontWeight: "700",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginBottom: "18px",
+              },
+            },
+            {
+              id: "w-rest-heading",
+              type: "heading",
+              content: "A menu worth savoring",
+              style: {
+                color: "#ffffff",
+                fontSize: "64px",
+                fontWeight: "800",
+                lineHeight: "1.05",
+                marginBottom: "24px",
+              },
+            },
+            {
+              id: "w-rest-copy",
+              type: "text",
+              content:
+                "Elegant seasonal dishes, curated for every occasion. Reserve a table or explore our chef's specials.",
+              style: {
+                color: "#cbd5e1",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+              },
+            },
+            {
+              id: "w-rest-btn",
+              type: "button",
+              content: "Book a table",
+              style: {
+                backgroundColor: "#ffffff",
+                color: "#1e3a8a",
+                padding: "16px 44px",
+                borderRadius: "9999px",
+                fontSize: "16px",
+                fontWeight: "700",
+                border: "none",
+                cursor: "pointer",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sec-menu",
+      type: "section",
+      style: { backgroundColor: "#0f172a", padding: "80px 60px" },
+      columns: [
+        {
+          id: "col-menu-1",
+          width: "33%",
+          style: { padding: "24px", margin: "0 12px", backgroundColor: "#111827", borderRadius: "24px" },
+          widgets: [
+            {
+              id: "w-menu-card-1",
+              type: "heading",
+              content: "Seasonal starters",
+              style: {
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: "700",
+                marginBottom: "16px",
+              },
+            },
+            {
+              id: "w-menu-copy-1",
+              type: "text",
+              content: "Fresh flavors that celebrate local ingredients and thoughtful preparation.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-menu-2",
+          width: "33%",
+          style: { padding: "24px", margin: "0 12px", backgroundColor: "#111827", borderRadius: "24px" },
+          widgets: [
+            {
+              id: "w-menu-card-2",
+              type: "heading",
+              content: "Main courses",
+              style: {
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: "700",
+                marginBottom: "16px",
+              },
+            },
+            {
+              id: "w-menu-copy-2",
+              type: "text",
+              content: "Handcrafted entrees designed to impress, whether you're celebrating or dining casually.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-menu-3",
+          width: "33%",
+          style: { padding: "24px", margin: "0 12px", backgroundColor: "#111827", borderRadius: "24px" },
+          widgets: [
+            {
+              id: "w-menu-card-3",
+              type: "heading",
+              content: "Signature desserts",
+              style: {
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: "700",
+                marginBottom: "16px",
+              },
+            },
+            {
+              id: "w-menu-copy-3",
+              type: "text",
+              content: "Finish your evening with elegant sweets and drinks crafted by our pastry team.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const blogTemplate: PageData = {
+  id: "tpl-blog",
+  sections: [
+    {
+      id: "sec-blog-hero",
+      type: "hero",
+      style: {
+        backgroundColor: "#ffffff",
+        padding: "100px 60px",
+        color: "#0f172a",
+      },
+      columns: [
+        {
+          id: "col-blog-hero",
+          width: "100%",
+          style: { maxWidth: "760px", margin: "0 auto" },
+          widgets: [
+            {
+              id: "w-blog-overline",
+              type: "text",
+              content: "Insights & stories",
+              style: {
+                color: "#8b5cf6",
+                fontSize: "14px",
+                fontWeight: "700",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginBottom: "18px",
+              },
+            },
+            {
+              id: "w-blog-heading",
+              type: "heading",
+              content: "Words that spark ideas",
+              style: {
+                color: "#0f172a",
+                fontSize: "64px",
+                fontWeight: "900",
+                lineHeight: "1.05",
+                marginBottom: "24px",
+              },
+            },
+            {
+              id: "w-blog-copy",
+              type: "text",
+              content:
+                "A modern blog layout for sharing expertise, launch updates, and creative thinking.",
+              style: {
+                color: "#475569",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+              },
+            },
+            {
+              id: "w-blog-btn",
+              type: "button",
+              content: "Browse posts",
+              style: {
+                backgroundColor: "#7c3aed",
+                color: "#ffffff",
+                padding: "16px 44px",
+                borderRadius: "9999px",
+                fontSize: "16px",
+                fontWeight: "700",
+                border: "none",
+                cursor: "pointer",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sec-blog-posts",
+      type: "section",
+      style: { backgroundColor: "#f8fafc", padding: "80px 60px" },
+      columns: [
+        {
+          id: "col-blog-1",
+          width: "33%",
+          style: { padding: "30px", backgroundColor: "#ffffff", borderRadius: "24px", boxShadow: "0 18px 50px rgba(15,23,42,0.08)", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-blog-post-1",
+              type: "heading",
+              content: "Design systems that scale",
+              style: { color: "#0f172a", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-blog-excerpt-1",
+              type: "text",
+              content: "Build consistent interfaces with smart, reusable patterns.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-blog-2",
+          width: "33%",
+          style: { padding: "30px", backgroundColor: "#ffffff", borderRadius: "24px", boxShadow: "0 18px 50px rgba(15,23,42,0.08)", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-blog-post-2",
+              type: "heading",
+              content: "Launching with confidence",
+              style: { color: "#0f172a", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-blog-excerpt-2",
+              type: "text",
+              content: "A practical guide to launching product updates that feel polished.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-blog-3",
+          width: "33%",
+          style: { padding: "30px", backgroundColor: "#ffffff", borderRadius: "24px", boxShadow: "0 18px 50px rgba(15,23,42,0.08)", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-blog-post-3",
+              type: "heading",
+              content: "Storytelling for brands",
+              style: { color: "#0f172a", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-blog-excerpt-3",
+              type: "text",
+              content: "Communicate your values and build trust through smart narratives.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const agencyTemplate: PageData = {
+  id: "tpl-agency",
+  sections: [
+    {
+      id: "sec-agency-hero",
+      type: "hero",
+      style: {
+        background: "linear-gradient(135deg, #090909 0%, #4f46e5 100%)",
+        padding: "110px 60px",
+        textAlign: "center",
+      },
+      columns: [
+        {
+          id: "col-agency-hero",
+          width: "100%",
+          style: { maxWidth: "760px", margin: "0 auto" },
+          widgets: [
+            {
+              id: "w-agency-label",
+              type: "text",
+              content: "Agency website",
+              style: {
+                color: "#c7d2fe",
+                fontSize: "14px",
+                fontWeight: "700",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginBottom: "18px",
+              },
+            },
+            {
+              id: "w-agency-heading",
+              type: "heading",
+              content: "Strategy, design, and growth — aligned.",
+              style: {
+                color: "#ffffff",
+                fontSize: "62px",
+                fontWeight: "900",
+                lineHeight: "1.05",
+                marginBottom: "24px",
+              },
+            },
+            {
+              id: "w-agency-copy",
+              type: "text",
+              content:
+                "A polished digital presence for agencies that want to stand out and book bigger clients.",
+              style: {
+                color: "#cbd5e1",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+              },
+            },
+            {
+              id: "w-agency-btn",
+              type: "button",
+              content: "View services",
+              style: {
+                backgroundColor: "#ffffff",
+                color: "#3730a3",
+                padding: "16px 44px",
+                borderRadius: "9999px",
+                fontSize: "16px",
+                fontWeight: "700",
+                border: "none",
+                cursor: "pointer",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sec-agency-services",
+      type: "section",
+      style: { backgroundColor: "#0f172a", padding: "80px 60px" },
+      columns: [
+        {
+          id: "col-agency-1",
+          width: "33%",
+          style: { padding: "28px", backgroundColor: "#111827", borderRadius: "24px", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-agency-service-1",
+              type: "heading",
+              content: "Brand strategy",
+              style: { color: "#ffffff", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-agency-service-copy-1",
+              type: "text",
+              content: "Create distinctive positioning that connects with your ideal audience.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-agency-2",
+          width: "33%",
+          style: { padding: "28px", backgroundColor: "#111827", borderRadius: "24px", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-agency-service-2",
+              type: "heading",
+              content: "Product design",
+              style: { color: "#ffffff", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-agency-service-copy-2",
+              type: "text",
+              content: "Beautiful interfaces that feel intuitive and polished.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-agency-3",
+          width: "33%",
+          style: { padding: "28px", backgroundColor: "#111827", borderRadius: "24px", margin: "0 12px" },
+          widgets: [
+            {
+              id: "w-agency-service-3",
+              type: "heading",
+              content: "Growth marketing",
+              style: { color: "#ffffff", fontSize: "22px", fontWeight: "700", marginBottom: "16px" },
+            },
+            {
+              id: "w-agency-service-copy-3",
+              type: "text",
+              content: "Campaigns and messaging designed to move the needle.",
+              style: { color: "#cbd5e1", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const eventTemplate: PageData = {
+  id: "tpl-event",
+  sections: [
+    {
+      id: "sec-event-hero",
+      type: "hero",
+      style: {
+        background: "linear-gradient(135deg, #111827 0%, #7c3aed 100%)",
+        padding: "100px 60px",
+        textAlign: "center",
+      },
+      columns: [
+        {
+          id: "col-event-hero",
+          width: "100%",
+          style: { maxWidth: "760px", margin: "0 auto" },
+          widgets: [
+            {
+              id: "w-event-label",
+              type: "text",
+              content: "Featured event",
+              style: {
+                color: "#c4b5fd",
+                fontSize: "14px",
+                fontWeight: "700",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginBottom: "18px",
+              },
+            },
+            {
+              id: "w-event-heading",
+              type: "heading",
+              content: "Join us for an unforgettable evening",
+              style: {
+                color: "#ffffff",
+                fontSize: "58px",
+                fontWeight: "900",
+                lineHeight: "1.05",
+                marginBottom: "24px",
+              },
+            },
+            {
+              id: "w-event-copy",
+              type: "text",
+              content:
+                "Inspiring speakers, curated programming, and networking designed for ambitious teams.",
+              style: {
+                color: "#dbeafe",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+              },
+            },
+            {
+              id: "w-event-btn",
+              type: "button",
+              content: "Reserve your spot",
+              style: {
+                backgroundColor: "#ffffff",
+                color: "#4f46e5",
+                padding: "16px 44px",
+                borderRadius: "9999px",
+                fontSize: "16px",
+                fontWeight: "700",
+                border: "none",
+                cursor: "pointer",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sec-event-schedule",
+      type: "section",
+      style: { backgroundColor: "#0f172a", padding: "80px 60px" },
+      columns: [
+        {
+          id: "col-event-1",
+          width: "100%",
+          style: { padding: "30px", backgroundColor: "#111827", borderRadius: "24px" },
+          widgets: [
+            {
+              id: "w-event-schedule-h",
+              type: "heading",
+              content: "Agenda highlights",
+              style: { color: "#ffffff", fontSize: "28px", fontWeight: "700", marginBottom: "20px" },
+            },
+            {
+              id: "w-event-schedule-1",
+              type: "text",
+              content: "Keynotes, panels, and hands-on workshops led by industry leaders.",
+              style: { color: "#cbd5e1", fontSize: "16px", lineHeight: "1.8", marginBottom: "12px" },
+            },
+            {
+              id: "w-event-schedule-2",
+              type: "text",
+              content: "Networking lounges, evening socials, and breakout sessions for every interest.",
+              style: { color: "#cbd5e1", fontSize: "16px", lineHeight: "1.8" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const nonprofitTemplate: PageData = {
+  id: "tpl-nonprofit",
+  sections: [
+    {
+      id: "sec-nonprofit-hero",
+      type: "hero",
+      style: {
+        background: "linear-gradient(135deg, #0f172a 0%, #0ea5e9 100%)",
+        padding: "100px 60px",
+        textAlign: "center",
+      },
+      columns: [
+        {
+          id: "col-nonprofit-hero",
+          width: "100%",
+          style: { maxWidth: "760px", margin: "0 auto" },
+          widgets: [
+            {
+              id: "w-nonprofit-label",
+              type: "text",
+              content: "Purpose-driven",
+              style: {
+                color: "#bae6fd",
+                fontSize: "14px",
+                fontWeight: "700",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                marginBottom: "18px",
+              },
+            },
+            {
+              id: "w-nonprofit-heading",
+              type: "heading",
+              content: "Make impact visible",
+              style: {
+                color: "#ffffff",
+                fontSize: "60px",
+                fontWeight: "900",
+                lineHeight: "1.05",
+                marginBottom: "24px",
+              },
+            },
+            {
+              id: "w-nonprofit-copy",
+              type: "text",
+              content:
+                "Share your mission, showcase programs, and invite supporters with a transparent, modern website.",
+              style: {
+                color: "#dbeafe",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                marginBottom: "40px",
+              },
+            },
+            {
+              id: "w-nonprofit-btn",
+              type: "button",
+              content: "Join the movement",
+              style: {
+                backgroundColor: "#ffffff",
+                color: "#0f172a",
+                padding: "16px 44px",
+                borderRadius: "9999px",
+                fontSize: "16px",
+                fontWeight: "700",
+                border: "none",
+                cursor: "pointer",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sec-nonprofit-impact",
+      type: "section",
+      style: { backgroundColor: "#f8fafc", padding: "80px 60px" },
+      columns: [
+        {
+          id: "col-nonprofit-1",
+          width: "33%",
+          style: { padding: "32px", backgroundColor: "#ffffff", borderRadius: "24px", margin: "0 12px", boxShadow: "0 24px 70px rgba(15,23,42,0.08)" },
+          widgets: [
+            {
+              id: "w-nonprofit-stat-1",
+              type: "heading",
+              content: "120K",
+              style: { color: "#0f172a", fontSize: "40px", fontWeight: "900", marginBottom: "14px" },
+            },
+            {
+              id: "w-nonprofit-stat-copy-1",
+              type: "text",
+              content: "Lives changed through our programs.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-nonprofit-2",
+          width: "33%",
+          style: { padding: "32px", backgroundColor: "#ffffff", borderRadius: "24px", margin: "0 12px", boxShadow: "0 24px 70px rgba(15,23,42,0.08)" },
+          widgets: [
+            {
+              id: "w-nonprofit-stat-2",
+              type: "heading",
+              content: "85%",
+              style: { color: "#0f172a", fontSize: "40px", fontWeight: "900", marginBottom: "14px" },
+            },
+            {
+              id: "w-nonprofit-stat-copy-2",
+              type: "text",
+              content: "Of donations go directly to programs.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+        {
+          id: "col-nonprofit-3",
+          width: "33%",
+          style: { padding: "32px", backgroundColor: "#ffffff", borderRadius: "24px", margin: "0 12px", boxShadow: "0 24px 70px rgba(15,23,42,0.08)" },
+          widgets: [
+            {
+              id: "w-nonprofit-stat-3",
+              type: "heading",
+              content: "12",
+              style: { color: "#0f172a", fontSize: "40px", fontWeight: "900", marginBottom: "14px" },
+            },
+            {
+              id: "w-nonprofit-stat-copy-3",
+              type: "text",
+              content: "Countries reached with our mission.",
+              style: { color: "#64748b", fontSize: "15px", lineHeight: "1.8" },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 export const ALL_TEMPLATES = [
   {
     id: "tpl-portfolio",
@@ -691,6 +1374,46 @@ export const ALL_TEMPLATES = [
     description: "High-converting landing page for your SaaS or product.",
     page_data: landingPageTemplate,
     sort_order: 3,
+  },
+  {
+    id: "tpl-restaurant",
+    name: "Restaurant",
+    category: "Food",
+    description: "A warm, modern restaurant website with menu highlights and reservation focus.",
+    page_data: restaurantTemplate,
+    sort_order: 4,
+  },
+  {
+    id: "tpl-blog",
+    name: "Blog",
+    category: "Creative",
+    description: "Content-first blogging layout for stories, case studies, and ideas.",
+    page_data: blogTemplate,
+    sort_order: 5,
+  },
+  {
+    id: "tpl-agency",
+    name: "Agency",
+    category: "Business",
+    description: "A premium agency homepage with service blocks and a bold hero.",
+    page_data: agencyTemplate,
+    sort_order: 6,
+  },
+  {
+    id: "tpl-event",
+    name: "Event",
+    category: "Event",
+    description: "An elegant event landing page built to drive registrations.",
+    page_data: eventTemplate,
+    sort_order: 7,
+  },
+  {
+    id: "tpl-nonprofit",
+    name: "Nonprofit",
+    category: "Creative",
+    description: "A mission-first website layout for causes, campaigns, and community impact.",
+    page_data: nonprofitTemplate,
+    sort_order: 8,
   },
   {
     id: "tpl-coming-soon",
