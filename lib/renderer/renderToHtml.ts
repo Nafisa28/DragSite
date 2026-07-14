@@ -39,8 +39,10 @@ function renderWidget(widget: Widget): string {
       return `<hr class="ds-widget ds-divider"${styleAttr} />`;
 
     case "video":
-      return widget.src
-        ? `<video src="${widget.src}" class="ds-widget ds-video"${styleAttr} controls></video>`
+      return widget.src?.includes("youtube.com") || widget.src?.includes("youtu.be")
+        ? `<div class="ds-widget ds-video"${styleAttr} style="aspect-ratio:16/9;width:100%;border-radius:12px;overflow:hidden"><iframe src="${widget.src}" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none;"></iframe></div>`
+        : widget.src
+        ? `<video src="${widget.src}" class="ds-widget ds-video"${styleAttr} controls style="width:100%;border-radius:12px;"></video>`
         : `<div class="ds-widget ds-video-placeholder"${styleAttr}>Video placeholder</div>`;
 
     case "list":
@@ -59,7 +61,12 @@ function renderWidget(widget: Widget): string {
 </form>`;
 
     case "gallery":
-      return `<div class="ds-widget ds-gallery"${styleAttr}><p style="color:#9ca3af;text-align:center">Gallery</p></div>`;
+      return `
+<div class="ds-widget ds-gallery"${styleAttr} style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px;">
+  <img src="https://via.placeholder.com/200?text=1" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;" alt="Gallery 1" loading="lazy" />
+  <img src="https://via.placeholder.com/200?text=2" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;" alt="Gallery 2" loading="lazy" />
+  <img src="https://via.placeholder.com/200?text=3" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;" alt="Gallery 3" loading="lazy" />
+</div>`;
 
     default:
       return `<div class="ds-widget"${styleAttr}>${widget.content ?? ""}</div>`;

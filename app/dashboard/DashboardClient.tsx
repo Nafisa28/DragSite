@@ -179,16 +179,16 @@ function SiteCard({
   const isOpen = openMenuId === site.id;
 
   return (
-    <div className="glass rounded-2xl overflow-hidden hover:border-white/15 transition-all group">
+    <div className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:border-violet-400/50 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 group">
       {/* Thumbnail */}
-      <div className="h-48 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 relative overflow-hidden shadow-lg shadow-slate-950/30">
+      <div className="h-52 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.35),_transparent_30%)]" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <FileText className="w-12 h-12 text-slate-500" />
+          <FileText className="w-16 h-16 text-slate-400" />
         </div>
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-5 right-5">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold tracking-[0.16em] ${
+            className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-widest ${
               site.status === "published"
                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                 : "bg-violet-500/15 text-violet-200 border border-violet-500/30"
@@ -200,13 +200,13 @@ function SiteCard({
       </div>
 
       {/* Info */}
-      <div className="p-5">
+      <div className="p-7">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-xl text-white truncate">{site.name}</h3>
-            <div className="mt-2 text-sm text-slate-400">
+            <h3 className="font-bold text-2xl text-white truncate">{site.name}</h3>
+            <div className="mt-3 text-sm text-slate-300">
               <span className="inline-flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5" />
+                <Clock className="w-4 h-4" />
                 {formatDate(site.updated_at)}
               </span>
             </div>
@@ -216,36 +216,36 @@ function SiteCard({
           <div className="relative ml-2">
             <button
               onClick={() => setOpenMenuId(isOpen ? null : site.id)}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
             >
-              <MoreVertical className="w-4 h-4" />
+              <MoreVertical className="w-5 h-5" />
             </button>
             {isOpen && (
-              <div className="absolute right-0 top-8 w-44 glass rounded-xl overflow-hidden z-10 shadow-xl">
+              <div className="absolute right-0 top-10 w-52 glass rounded-2xl overflow-hidden z-10 shadow-2xl bg-[#0a0a0f] border border-white/10">
                 <Link
                   href={`/editor/${site.id}`}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-3 px-5 py-3.5 text-base hover:bg-white/5 transition-colors"
                   onClick={() => setOpenMenuId(null)}
                 >
-                  <Edit2 className="w-3.5 h-3.5" /> Edit
+                  <Edit2 className="w-4.5 h-4.5" /> Edit
                 </Link>
                 {site.status === "published" && (
                   <a
                     href={`/s/${site.slug}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 px-5 py-3.5 text-base hover:bg-white/5 transition-colors"
                     onClick={() => setOpenMenuId(null)}
                   >
-                    <ExternalLink className="w-3.5 h-3.5" /> View Live
+                    <ExternalLink className="w-4.5 h-4.5" /> View Live
                   </a>
                 )}
                 <button
                   onClick={() => { setOpenMenuId(null); onDelete(site.id); }}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 w-full transition-colors"
+                  className="flex items-center gap-3 px-5 py-3.5 text-base text-red-300 hover:bg-red-500/10 w-full transition-colors"
                   disabled={deletingId === site.id}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4.5 h-4.5" />
                   {deletingId === site.id ? "Deleting..." : "Delete"}
                 </button>
               </div>
@@ -254,29 +254,29 @@ function SiteCard({
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col gap-3 mt-5 sm:flex-row">
+        <div className="flex flex-col gap-4 mt-7 sm:flex-row">
           <Link
             href={`/editor/${site.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-3xl bg-white/10 hover:bg-white/15 text-base font-semibold text-white transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-base font-bold text-white transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
           >
-            <Edit2 className="w-4 h-4" /> Edit
+            <Edit2 className="w-5 h-5" /> Edit
           </Link>
           {site.status === "published" ? (
             <a
               href={`/s/${site.slug}`}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 text-sm font-semibold transition-all duration-300"
             >
-              <Globe className="w-3.5 h-3.5" /> View
+              <Globe className="w-5 h-5" /> View
             </a>
           ) : (
             <button
               onClick={() => onPublish(site.id)}
               disabled={publishingId === site.id}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-300 text-sm font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-5 h-5" />
               {publishingId === site.id ? "Publishing..." : "Publish"}
             </button>
           )}
@@ -288,17 +288,17 @@ function SiteCard({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center py-32 text-center">
-      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 flex items-center justify-center mb-6 border border-violet-500/20">
-        <Layers className="w-10 h-10 text-violet-400" />
+    <div className="flex flex-col items-center justify-center py-40 text-center">
+      <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-violet-500/20 to-blue-500/20 flex items-center justify-center mb-8 border border-violet-500/30">
+        <Layers className="w-14 h-14 text-violet-300" />
       </div>
-      <h2 className="text-2xl font-bold text-white mb-3">No sites yet</h2>
-      <p className="text-slate-400 max-w-sm mb-8 leading-relaxed">
+      <h2 className="text-3xl font-bold text-white mb-4">No sites yet</h2>
+      <p className="text-slate-300 max-w-md mb-10 text-lg leading-relaxed">
         Browse polished templates and start building your first website with style and speed.
       </p>
       <Link
         href="/templates"
-        className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 font-semibold transition-all"
+        className="px-10 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 font-bold text-lg transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
       >
         Browse Templates
       </Link>

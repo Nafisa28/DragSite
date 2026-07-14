@@ -170,15 +170,15 @@ export default function TemplatesClient({ user, templates }: Props) {
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-violet-500 transition-colors"
             />
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-3 flex-wrap">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                   activeCategory === cat
-                    ? "bg-violet-600 text-white"
-                    : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                    ? "bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/20"
+                    : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white border border-white/10"
                 }`}
               >
                 {cat}
@@ -224,11 +224,11 @@ function TemplateCard({
   const isDisabled = creating !== null;
 
   return (
-    <div className="glass rounded-2xl overflow-hidden group hover:border-violet-500/30 transition-all">
+    <div className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:border-violet-400/50 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 group">
       {/* Preview thumbnail */}
-      <div className={`h-48 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
-          <div className="text-4xl mb-2">
+      <div className={`h-56 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
+          <div className="text-6xl mb-3">
             {template.name === "Portfolio" ? "👤" :
              template.name === "Business" ? "🏢" :
              template.name === "Restaurant" ? "🍽️" :
@@ -244,20 +244,20 @@ function TemplateCard({
              template.name === "Nonprofit" ? "❤️" :
              template.name === "E-commerce Lite" ? "🛍️" : "🌐"}
           </div>
-          <span className="text-white font-bold text-lg drop-shadow">{template.name}</span>
+          <span className="text-white font-extrabold text-2xl drop-shadow-lg">{template.name}</span>
         </div>
 
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4">
           <button
             onClick={() => onSelect(template)}
             disabled={isDisabled}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+            className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white text-base font-bold transition-all disabled:opacity-50 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
           >
             {isCreating ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Layers className="w-4 h-4" />
+              <Layers className="w-5 h-5" />
             )}
             {isCreating ? "Creating..." : "Use Template"}
           </button>
@@ -265,25 +265,25 @@ function TemplateCard({
       </div>
 
       {/* Info */}
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-white">{template.name}</h3>
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${categoryColor}`}>
+      <div className="p-7">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-xl text-white">{template.name}</h3>
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${categoryColor}`}>
             {template.category}
           </span>
         </div>
         {template.description && (
-          <p className="text-gray-400 text-sm leading-relaxed mb-4">{template.description}</p>
+          <p className="text-gray-300 text-sm leading-relaxed mb-6">{template.description}</p>
         )}
         <button
           onClick={() => onSelect(template)}
           disabled={isDisabled}
           id={`use-template-${template.id}`}
-          className="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white text-base font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
         >
           {isCreating ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Creating site...
+              <Loader2 className="w-5 h-5 animate-spin" /> Creating site...
             </>
           ) : (
             "Start with this template →"

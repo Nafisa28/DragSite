@@ -137,6 +137,34 @@ function createWidget(type: WidgetType): Widget {
         items: ["List item 1", "List item 2", "List item 3"],
         style: { color: "#e5e7eb", fontSize: "16px", marginBottom: "16px" },
       };
+    case "video":
+      return {
+        id,
+        type,
+        src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        style: { borderRadius: "24px", width: "100%", aspectRatio: "16/9" },
+      };
+    case "icon":
+      return {
+        id,
+        type,
+        content: "★",
+        style: { fontSize: "48px", color: "#7c3aed" },
+      };
+    case "form":
+      return {
+        id,
+        type,
+        content: "Subscribe",
+        style: { padding: "24px" },
+      };
+    case "gallery":
+      return {
+        id,
+        type,
+        content: "Gallery",
+        style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", padding: "12px" },
+      };
     default:
       return { id, type, content: "New widget" };
   }
@@ -368,6 +396,20 @@ function WidgetPreview({
           ))}
         </ul>
       );
+    case "video":
+      return (
+        <div onClick={onSelect} className={wrapperClass} style={baseStyle}>
+          <iframe
+            className="w-full rounded-2xl"
+            style={{ aspectRatio: "16/9" }}
+            src={widget.src ?? "https://www.youtube.com/embed/dQw4w9WgXcQ"}
+            title="Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
     case "icon":
       return (
         <span
@@ -399,10 +441,16 @@ function WidgetPreview({
       return (
         <div
           onClick={onSelect}
-          className={`rounded-2xl border border-white/10 p-8 text-center text-sm text-gray-300 cursor-pointer ${wrapperClass}`}
+          className={`grid grid-cols-3 gap-3 ${wrapperClass}`}
           style={baseStyle}
         >
-          Gallery placeholder
+          {[
+            "https://via.placeholder.com/200?text=1",
+            "https://via.placeholder.com/200?text=2",
+            "https://via.placeholder.com/200?text=3"
+          ].map((src, idx) => (
+            <img key={idx} src={src} alt={`Gallery ${idx+1}`} className="rounded-xl w-full aspect-square object-cover" />
+          ))}
         </div>
       );
     default:
@@ -459,12 +507,10 @@ export default function EditorClient({
   const reorderWidgets = useEditorStore((state) => state.reorderWidgets);
   const addSection = useEditorStore((state) => state.addSection);
 
-  const temporal = useEditorStore((state) => ({
-    undo: (state as any).undo as (() => void) | undefined,
-    redo: (state as any).redo as (() => void) | undefined,
-    canUndo: ((state as any).pastStates as unknown[] | undefined)?.length ?? 0 > 0,
-    canRedo: ((state as any).futureStates as unknown[] | undefined)?.length ?? 0 > 0,
-  }));
+  const undo = useEditorStore((state) => (state as any).undo as (() => void) | undefined);
+  const redo = useEditorStore((state) => (state as any).redo as (() => void) | undefined);
+  const canUndo = useEditorStore((state) => ((state as any).pastStates as unknown[] | undefined)?.length ?? 0 > 0);
+  const canRedo = useEditorStore((state) => ((state as any).futureStates as unknown[] | undefined)?.length ?? 0 > 0);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -629,17 +675,17 @@ export default function EditorClient({
       }
       if ((event.metaKey || event.ctrlKey) && key === "z" && !event.shiftKey) {
         event.preventDefault();
-        temporal.undo?.();
+        undo?.();
       }
       if ((event.metaKey || event.ctrlKey) && (key === "y" || (event.shiftKey && key === "z"))) {
         event.preventDefault();
-        temporal.redo?.();
+        redo?.();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleSave, temporal]);
+  }, [handleSave, undo, redo]);
 
   const selectedSection = useMemo(
     () => pageData.sections.find((section) => section.id === selection?.sectionId),
@@ -945,6 +991,23 @@ export default function EditorClient({
               </>
             )}
 
+            {selectedWidget.type === "video" && (
+              <>
+                <label className="block text-sm text-gray-300 mb-2 mt-4">Video URL (YouTube embed)</label>
+                <input
+                  type="text"
+                  value={selectedWidget.src ?? ""}
+                  onChange={(event) =>
+                    updateWidget(selectedSection.id, selectedColumn.id, selectedWidget.id, {
+                      src: event.target.value,
+                    })
+                  }
+                  placeholder="https://www.youtube.com/embed/..."
+                  className="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-sm text-white outline-none"
+                />
+              </>
+            )}
+
             <label className="block text-sm text-gray-300 mb-2 mt-4">Color</label>
             <input
               type="color"
@@ -1107,16 +1170,16 @@ export default function EditorClient({
             </div>
             <button
               type="button"
-              onClick={() => temporal.undo?.()}
-              disabled={!temporal.canUndo || saving}
+              onClick={() => undo?.()}
+              disabled={!canUndo || saving}
               className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-gray-200 hover:bg-white/10 disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" /> Undo
             </button>
             <button
               type="button"
-              onClick={() => temporal.redo?.()}
-              disabled={!temporal.canRedo || saving}
+              onClick={() => redo?.()}
+              disabled={!canRedo || saving}
               className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-gray-200 hover:bg-white/10 disabled:opacity-50"
             >
               <RotateCw className="w-4 h-4" /> Redo
@@ -1196,6 +1259,10 @@ export default function EditorClient({
                 { label: "Divider", type: "divider" },
                 { label: "Spacer", type: "spacer" },
                 { label: "List", type: "list" },
+                { label: "Video", type: "video" },
+                { label: "Icon", type: "icon" },
+                { label: "Form", type: "form" },
+                { label: "Gallery", type: "gallery" },
               ].map((widget) => (
                 <WidgetPaletteItem
                   key={widget.type}

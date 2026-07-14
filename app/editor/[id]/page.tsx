@@ -8,6 +8,7 @@ interface Props {
 }
 
 export default async function EditorPage({ params }: Props) {
+  const { id } = await params;
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,7 +19,7 @@ export default async function EditorPage({ params }: Props) {
   const { data: site } = await supabase
     .from("sites")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("user_id", user.id)
     .single();
 
